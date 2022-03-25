@@ -1,6 +1,7 @@
 new Vue({
     el: '#app',
     data: {
+       message: "hello vue",
         products: [
            {
               "id": 1,
@@ -182,9 +183,25 @@ new Vue({
               "category":"Electronics",
               "price":"375.00"
            }
-        ]
+        ],
+       order: {
+          dir:1
+       }
    },
-   method: {
-
+   computed: {
+       productsSorted() {
+        return  this.products.sort((a,b)=> (a.price - b.price) * this.order.dir)
+       },
+      classes() {
+          return [
+              'sort-control',
+              this.order.dir === 1? 'ascending':'descending'
+          ]
+      }
+   },
+   methods: {
+       sort() {
+          this.order.dir *= -1;
+       }
    }
 })
