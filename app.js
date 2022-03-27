@@ -187,11 +187,16 @@ new Vue({
        order: {
           dir:1,
           column: 'price'
-       }
+       },
+       filter: {
+          name: '',
+          keywords: ''
+       },
+       isSearching: false
    },
    computed: {
        productsSorted() {
-        return  this.products.sort((a,b)=> {
+        return  this.productsFiltered.sort((a,b)=> {
            let left = a[this.order.column], right = b[this.order.column]
            if(isNaN(left)  && isNaN(right)) {
               if(left > right)
@@ -209,12 +214,33 @@ new Vue({
       },
       direction() {
            return  this.order.dir === 1 ? 'ascending':'descending';
+      },
+
+      productsFiltered() {
+          let products = this.products;
+          let findName = new RegExp(this.filter.name, 'i')
+          if(this.filter.name) {
+             products = products.filter(el =>  el.name.match(findName))
+          }
+          return products;
+      },
+      keywordsIsInvalid() {
+          return this.filter.keywords.length < 3;
       }
    },
    methods: {
        sort(column) {
           this.order.column = column;
           this.order.dir *= -1;
-       }
+       },
+      clearInput() {
+         this.filter.name = this.filter.keywords = '';
+         this.isSearching = false;
+      },
+      search() {
+          if(!this.keywordsIsInvalid)
+          this.filter.name = this.filter.keywords;
+          this.isSearching = true;
+      }
    }
 })
