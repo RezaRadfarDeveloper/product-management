@@ -192,7 +192,18 @@ new Vue({
           name: '',
           keywords: ''
        },
-       isSearching: false
+       isSearching: false,
+
+       currentPage: 1,
+
+       perPage: 10,
+
+       product: {
+          id:null,
+          name: '',
+          category: '',
+          price: ''
+       }
    },
    computed: {
        productsSorted() {
@@ -224,11 +235,44 @@ new Vue({
           }
           return products;
       },
+
+      productsPaginated() {
+         let start = (this.currentPage - 1) * this.perPage;
+         let end =  (this.currentPage) * this.perPage;
+
+         return this.productsSorted.slice(start, end)
+      },
+
       keywordsIsInvalid() {
           return this.filter.keywords.length < 3;
+      },
+      isFirstPage() {
+         return this.currentPage === 1;
+      },
+
+      isLastPage() {
+          return this.currentPage === this.pages;
+      },
+
+      pages() {
+          return Math.ceil(this.productsFiltered.length / this.perPage);
       }
    },
    methods: {
+       prev() {
+          if(!this.isFirstPage)
+          this.currentPage --;
+       },
+
+      next() {
+          if(!this.isLastPage)
+             this.currentPage ++;
+      },
+
+      switchPage(page) {
+          this.currentPage = page;
+      },
+
        sort(column) {
           this.order.column = column;
           this.order.dir *= -1;
@@ -241,6 +285,25 @@ new Vue({
           if(!this.keywordsIsInvalid)
           this.filter.name = this.filter.keywords;
           this.isSearching = true;
+      },
+
+      save() {
+          if(this.product.name && this.product.category && this.product.price) {
+             this.product.id = this.products.length + 1;
+
+             this.products.unshift(this.product)
+             this.product = {
+                id:null,
+                name:'',
+                category: '',
+                price: ''
+             }
+
+             $(this.$refs.vueModal).modal('hide');
+          } else {
+             alert('Please fill the fields correctly')
+          }
+
       }
    }
 })
