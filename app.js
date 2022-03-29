@@ -203,7 +203,9 @@ new Vue({
           name: '',
           category: '',
           price: ''
-       }
+       },
+
+       isEdit: false
    },
    computed: {
        productsSorted() {
@@ -256,6 +258,26 @@ new Vue({
 
       pages() {
           return Math.ceil(this.productsFiltered.length / this.perPage);
+      },
+      categories() {
+          let categories = this.products.map(el => el.category);
+          return Array.from(new Set(categories))
+              .sort((a,b) => {
+                 if(a > b)
+                    return 11;
+                 else if (a < b)
+                    return -1;
+                 else
+                    return 0;
+              });
+      },
+
+      modalTextButton() {
+          return this.isEdit ? "Update" : "Save";
+      },
+
+      modalTitle() {
+          return this.isEdit ? "Update the Product" : "Add new Product";
       }
    },
    methods: {
@@ -287,6 +309,28 @@ new Vue({
           this.isSearching = true;
       },
 
+      add() {
+
+         this.isEdit = false;
+
+         this.product = {
+            id:null,
+            name:'',
+            category: '',
+            price: ''
+         }
+
+         $(this.$refs.vueModal).modal('show');
+      },
+
+      edit(product) {
+          this.isEdit = true;
+
+          this.product = Object.assign({},product);
+
+         $(this.$refs.vueModal).modal('show');
+      },
+
       save() {
           if(this.product.name && this.product.category && this.product.price) {
              this.product.id = this.products.length + 1;
@@ -304,6 +348,33 @@ new Vue({
              alert('Please fill the fields correctly')
           }
 
-      }
+      },
+
+      update() {
+          let index = this.products.findIndex(el => el.id === this.product.id);
+
+          this.products.splice(index, 1, this.product);
+
+          this.isEdit = false;
+
+         $(this.$refs.vueModal).modal('hide');
+      },
+
+      saveOrUpdate() {
+          if(this.isEdit) {
+             this.update();
+          }
+          else {
+             this.save();
+          }
+      },
+
+      remove(product) {
+          if(confirm("Are you sure about deleting the product?")) {
+
+             let index = this.products.findIndex(el => el.id === product.id);
+             this.products.splice(index, 1);
+          }
+       }
    }
 })

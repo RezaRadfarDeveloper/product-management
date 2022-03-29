@@ -18,8 +18,8 @@
             <div class="card-body">
                 <div class="row mb-3">
                     <div class="col-md-3">
-                        <a href="#" class="btn btn-primary" data-toggle="modal" data-target="#product-modal">
-                            <i class="fas fa-plus-circle"></i>Add New
+                        <a href="#" class="btn btn-primary" @click="add">
+                            <i class="fas fa-plus-circle"></i>Add new
                         </a>
                     </div>
                     <div class="col-md-9">
@@ -42,6 +42,7 @@
                             <th @click="sort('name')" :class="order.column === 'name'?direction:''" class="sort-control">Product Name</th>
                             <th @click="sort('category')" :class="order.column === 'category'?direction:''" class="sort-control">Category</th>
                             <th @click="sort('price')" :class="order.column === 'price'?direction:''"  class="sort-control">Price</th>
+                            <th width="100">Action</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -49,6 +50,12 @@
                             <td>{{ product.name }}</td>
                             <td>{{ product.category }}</td>
                             <td>{{ product.price }}</td>
+                            <td><a href="#" class="btn btn-sm btn-outline-secondary" @click.prevent="edit(product)">
+                                <i class="fas fa-edit"></i>
+                            </a></td>
+                            <td><a href="#" class="btn btn-sm btn-outline-danger" @click.prevent="remove(product)">
+                                <i class="fas fa-times"></i>
+                            </a></td>
                         </tr>
                     </tbody>
                 </table>
@@ -68,7 +75,7 @@
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+                        <h5 class="modal-title" id="exampleModalLabel">{{modalTitle}}</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
@@ -81,7 +88,10 @@
                             </div>
                             <div class="form-group">
                                 <label>Category</label>
-                                <input type="text" v-model="product.category" class="form-control">
+<!--                                <input type="text" v-model="product.category" class="form-control">-->
+                                <select name="category" id="category" class="form-control" v-model="product.category">
+                                    <option v-for="category in categories" :value="category">{{category}}</option>
+                                </select>
                             </div>
                             <div class="form-group">
                                 <label>Price($)</label>
@@ -91,7 +101,7 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                        <button type="button" class="btn btn-primary" @click.prevent="save">Save changes</button>
+                        <button type="button" class="btn btn-primary" @click.prevent="saveOrUpdate">{{modalTextButton}}</button>
                     </div>
                 </div>
             </div>
